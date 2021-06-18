@@ -35,8 +35,8 @@ if __name__=="__main__":
     x_coord_gps,y_coord_gps = proj.transform(lon_gps, lat_gps)
     x_coord_st,y_coord_st = proj.transform(lon_st, lat_st)
 
-    min_x_coordinate = min(np.min(x_coord_gps), np.min(x_coord_st))
-    min_y_coordinate = min(np.min(y_coord_gps), np.min(y_coord_st))
+    min_x_coordinate = min(x_coord_gps[0], x_coord_st[0])
+    min_y_coordinate = min(y_coord_gps[0], y_coord_st[0])
     x_coord_gps, x_coord_st = x_coord_gps-min_x_coordinate, x_coord_st-min_x_coordinate
     y_coord_gps, y_coord_st = y_coord_gps-min_y_coordinate, y_coord_st-min_y_coordinate
 
