@@ -20,18 +20,18 @@ def read_csv(csv_filepath):
 
 def animation_frame(i):
     # print(x_coord_st[i], y_coord_st[i])
-    line_gps.set_xdata(x_coord_st[:i])
-    line_gps.set_ydata(y_coord_st[:i])
+    line_gps.set_xdata(x_coord_gps[:i+1])
+    line_gps.set_ydata(y_coord_gps[:i+1])
 
-    ax.set_xlim(x_coord_st[i]-10, x_coord_st[i]+10)
-    ax.set_ylim(y_coord_st[i]-10, y_coord_st[i]+10)
+    ax.set_xlim(x_coord_gps[i]-10, x_coord_gps[i]+10)
+    ax.set_ylim(y_coord_gps[i]-10, y_coord_gps[i]+10)
     moving_cum = 0
 
-    while times_st[i] > times_gps[moving_cum]:
+    while times_gps[i] > times_st[moving_cum]:
         moving_cum+=1
 
-    line_st.set_xdata(x_coord_gps[:moving_cum])
-    line_st.set_ydata(y_coord_gps[:moving_cum])
+    line_st.set_xdata(x_coord_st[:moving_cum])
+    line_st.set_ydata(y_coord_st[:moving_cum])
 
     return line_gps, line_st, 
 
