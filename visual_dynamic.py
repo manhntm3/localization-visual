@@ -25,6 +25,14 @@ def animation_frame(i):
 
     ax.set_xlim(x_coord_gps[i]-10, x_coord_gps[i]+10)
     ax.set_ylim(y_coord_gps[i]-10, y_coord_gps[i]+10)
+    
+    head_x_1, head_y_1, head_x_2, head_y_2 = draw_ego_car(i)
+    line_head_1.set_xdata(head_x_1)
+    line_head_1.set_ydata(head_y_1)
+    line_head_2.set_xdata(head_x_2)
+    line_head_2.set_ydata(head_y_2)
+    # print(x_coord_gps[i], y_coord_gps[i])
+    # print(head_x_1, head_y_1)
     moving_cum = 0
 
     while times_gps[i] > times_st[moving_cum]:
@@ -33,7 +41,7 @@ def animation_frame(i):
     line_st.set_xdata(x_coord_st[:moving_cum])
     line_st.set_ydata(y_coord_st[:moving_cum])
 
-    return line_gps, line_st, 
+    return line_gps, line_st, line_head_1, line_head_2
 
 def get_corners(pos, rot_mat, ego_size):
     w, l = ego_size
@@ -51,18 +59,25 @@ def draw_ego_car(sample_idx):
     pos = np.array([sample_pos_x, sample_pos_y])
 
     # Time, lla x3, gpi x 3, gvi x 3, quart x 4
-    sample_quart = state_arr[sample_idx, 10:14]
+    sample_quart = [float(x) for x in state_list[sample_idx][10:14]]
     rot_mat = R.from_quat(sample_quart).as_matrix()
-    corners_2d = get_corners(pos, rot_mat, ego_size=(60, 200))
+    corners_2d = get_corners(pos, rot_mat, ego_size=(2, 4))
+    head_x_1, head_y_1 = [],[]
+    head_x_2, head_y_2 = [],[]
 
     lines = [(0, 1), (1, 2), (2, 3), (3, 0)]
     for p1_idx, p2_idx in lines:
         x_vals = [corners_2d[p1_idx, 0], corners_2d[p2_idx, 0]]
         y_vals = [corners_2d[p1_idx, 1], corners_2d[p2_idx, 1]]
         if p1_idx == 3 and p2_idx == 0:  # Heading
-            plt.plot(x_vals, y_vals, 'c')
+            ax.plot(x_vals, y_vals, 'c')
+            head_x_1.append(x_vals)
+            head_y_1.append(y_vals)
         else:
-            plt.plot(x_vals, y_vals, 'g')
+            ax.plot(x_vals, y_vals, 'g')
+            head_x_2.append(x_vals)
+            head_y_2.append(y_vals)
+    return head_x_1, head_y_1, head_x_2, head_y_2
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Visualisation')
@@ -88,8 +103,8 @@ if __name__=="__main__":
 
     min_x_coord = min(x_coord_gps[0], x_coord_st[0])
     min_y_coord = min(y_coord_gps[0], y_coord_st[0])
-    x_coord_gps, x_coord_st = [x-min_x_coord for x in x_coord_gps], [x-min_x_coord for x in x_coord_st]
-    y_coord_gps, y_coord_st = [y-min_y_coord for y in y_coord_gps], [y-min_y_coord for y in y_coord_st]
+    # x_coord_gps, x_coord_st = [x-min_x_coord for x in x_coord_gps], [x-min_x_coord for x in x_coord_st]
+    # y_coord_gps, y_coord_st = [y-min_y_coord for y in y_coord_gps], [y-min_y_coord for y in y_coord_st]
 
     plt.style.use('dark_background')
     # print(x_coord_gps[0]), print(y_coord_gps[0])
@@ -99,12 +114,14 @@ if __name__=="__main__":
     ax.grid()
     line_gps, = ax.plot(x_coord_gps[0], y_coord_gps[0], 'r', label="GPS")
     line_st, = ax.plot(x_coord_st[0], y_coord_st[0], 'b', label="State")
+    line_head_1, = ax.plot(x_coord_st[0], y_coord_st[0], 'c')
+    line_head_2, = ax.plot(x_coord_st[0], y_coord_st[0], 'g')
     # moving_timestamp = time_st[0]
     # print(times_gps)
     Writer = animation.writers['ffmpeg']
     writer = Writer(fps=30, metadata=dict(artist='Me'), bitrate=1800)
 
-    line_ani = animation.FuncAnimation(fig, func=animation_frame, frames = np.arange(0,10000,1), interval=10, blit=True)
+    line_ani = animation.FuncAnimation(fig, func=animation_frame, frames = np.arange(0,10000,1), interval=20, blit=True)
     # plt.show()
 
     plt.legend()
