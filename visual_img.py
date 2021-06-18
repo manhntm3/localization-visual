@@ -43,4 +43,5 @@ if __name__=="__main__":
     plt.plot(x_coord_gps,y_coord_gps, 'r')
     plt.plot(x_coord_st,y_coord_st, 'b')
     plt.axis('equal')
+    plt.savefig('output/full.png')
     plt.show()
