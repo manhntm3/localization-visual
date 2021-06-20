@@ -1,11 +1,7 @@
 import csv
 import argparse
 import matplotlib.pyplot as plt
-import pyproj
-import math
-import decimal
 import numpy as np
-from pyproj import Proj, transform
 
 from scipy.spatial.transform import Rotation as R
 
@@ -66,10 +62,8 @@ if __name__ == "__main__":
     lon_st = state_arr[:, 2]
     alt_st = state_arr[:, 3]
 
-    proj = pyproj.Transformer.from_crs(4326, 3857, always_xy=True)
-
-    x_coord_gps, y_coord_gps = proj.transform(lon_gps, lat_gps)
-    x_coord_st, y_coord_st = proj.transform(lon_st, lat_st)
+    x_coord_gps, y_coord_gps = gps_arr[:, -3], gps_arr[:, -2]
+    x_coord_st, y_coord_st = state_arr[:, -3], state_arr[:, -2]
 
     # Start at (0, 0)
     min_x_coordinate = np.array(x_coord_gps[0])
@@ -81,8 +75,16 @@ if __name__ == "__main__":
     plt.plot(x_coord_gps, y_coord_gps, 'r')
     plt.plot(x_coord_st, y_coord_st, 'b')
 
+    gpi_st_x = state_arr[:, 4]
+    gpi_st_y = state_arr[:, 5]
+
+    print('diff x: {:.4f}, y: {:.4f}'.format((gpi_st_x - x_coord_st).max(), (gpi_st_y - y_coord_st).max()))
+
+    plt.plot(gpi_st_x, gpi_st_y, 'g')
+
+
     # Take a sample position, then plot car direction
-    draw_ego_car(sample_idx=30000)
+    draw_ego_car(sample_idx=20000)
 
     plt.axis('equal')
     plt.show()
