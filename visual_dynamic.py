@@ -116,7 +116,8 @@ if __name__ == "__main__":
         0, 10000, 1), interval=20, blit=False, repeat=False, save_count=200)
 
     plt.legend()
-    # line_ani.save('output/lines_enu_20210620.mp4', writer=writer)
+    # line_ani.save('output/lines_enu_20210620_v3.mp4', writer=writer)
 
     # plt.grid()
+    plt.gca().set_aspect("equal")
     plt.show()
