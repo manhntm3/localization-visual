@@ -60,12 +60,14 @@ def animation_frame(i):
     line_gps.set_xdata(x_coord_gps[:i+1])
     line_gps.set_ydata(y_coord_gps[:i+1])
 
-    ax.set_xlim(x_coord_gps[i]-10, x_coord_gps[i]+10)
-    ax.set_ylim(y_coord_gps[i]-10, y_coord_gps[i]+10)
-
     moving_cum = 0
     while times_gps[i] > times_st[moving_cum]:
         moving_cum += 1
+
+    # Use state position as the center
+    ax.set_xlim(x_coord_st[moving_cum - 1]-10, x_coord_st[moving_cum - 1]+10)
+    ax.set_ylim(y_coord_st[moving_cum - 1]-10, y_coord_st[moving_cum - 1]+10)
+
     head_x_1, head_y_1, head_x_2, head_y_2 = draw_ego_car(moving_cum-1)
     ax.get_lines().pop(-1).remove()
     ax.get_lines().pop(-1).remove()
